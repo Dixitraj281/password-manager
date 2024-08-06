@@ -1,103 +1,58 @@
-// /components/SubscriptionForm.js
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Table, Paper, Button, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
+import axios from 'axios';
 
-import { Box, Button, MenuItem, Checkbox, TextField, Typography, FormControlLabel } from '@mui/material';
+const AvailableSubscriptions = ({ onBack }) => {
+  const [availableSubscriptions, setAvailableSubscriptions] = useState([]);
 
-export default function SubscriptionForm( onCancel ) {
-  const [form, setForm] = React.useState({
-    category: '',
-    name: '',
-    description: '',
-    dateOfPurchase: '',
-    endDate: '',
-    planInterval: 'Monthly',
-    notify: {
-      monthBefore: false,
-      weekBefore: false,
-      dayBefore: false
-    },
-    cost: '',
-    documents: null,
-    teamMembers: ''
-  });
+    const fetchAvailableSubscriptions = async () => {
+      try{
+        const response = await axios.get(`${process.env.API_URL}/user/getAllPlans`, {
+          headers: {
+            Authorization: `Bearer ${token}` // Set the Authorization header with the token
+          }
+        });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === 'checkbox') {
-      setForm({
-        ...form,
-        notify: {
-          ...form.notify,
-          [name]: checked
-        }
-      });
-    } else {
-      setForm({
-        ...form,
-        [name]: value
-      });
-    }
-  };
-
-  const handleFileChange = (e) => {
-    setForm({
-      ...form,
-      documents: e.target.files[0]
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log(form);
-    onCancel();
-  };
+        setAvailableSubscriptions(response.data.data); // Adjust based on actual response structure
+      } catch (error) {
+        console.error('Error fetching available subscriptions:', error);
+      }
+    };
+    useEffect(() => {
+    fetchAvailableSubscriptions();
+  }, []);
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <TextField label="Category" name="category" value={form.category} onChange={handleChange} />
-      <TextField label="Name" name="name" value={form.name} onChange={handleChange} />
-      <TextField label="Description" name="description" value={form.description} onChange={handleChange} multiline rows={4} />
-      <TextField label="Date of Purchase" name="dateOfPurchase" type="date" value={form.dateOfPurchase} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-      <TextField label="End Date" name="endDate" type="date" value={form.endDate} onChange={handleChange} InputLabelProps={{ shrink: true }} />
-      <TextField
-        label="Plan Interval"
-        name="planInterval"
-        select
-        value={form.planInterval}
-        onChange={handleChange}
-      >
-        <MenuItem value="Monthly">Monthly</MenuItem>
-        <MenuItem value="Yearly">Yearly</MenuItem>
-        <MenuItem value="Lifetime">Lifetime</MenuItem>
-      </TextField>
-      <Typography variant="subtitle1">Notify me:</Typography>
-      <FormControlLabel
-        control={<Checkbox checked={form.notify.monthBefore} onChange={handleChange} name="monthBefore" />}
-        label="One month before end date"
-      />
-      <FormControlLabel
-        control={<Checkbox checked={form.notify.weekBefore} onChange={handleChange} name="weekBefore" />}
-        label="One week before end date"
-      />
-      <FormControlLabel
-        control={<Checkbox checked={form.notify.dayBefore} onChange={handleChange} name="dayBefore" />}
-        label="One day before end date"
-      />
-      <TextField label="Subscription Cost" name="cost" value={form.cost} onChange={handleChange} />
-      <Button variant="contained" component="label">
-        Add Documents - Drag and Drop
-        <input type="file" hidden onChange={handleFileChange} />
+    <TableContainer component={Paper}>
+      <Button variant="contained" color="secondary" onClick={onBack} style={{ margin: 16 }}>
+        Back to My Subscriptions
       </Button>
-      <TextField label="Share access: team members" name="teamMembers" value={form.teamMembers} onChange={handleChange} />
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button type="submit" variant="contained" color="primary">
-          Save Subscription
-        </Button>
-        <Button variant="outlined" onClick={onCancel}>
-          Cancel
-        </Button>
-      </Box>
-    </Box>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Subscription Name</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {availableSubscriptions.map((subscription, index) => (
+            <TableRow key={index}>
+              <TableCell>{subscription.name}</TableCell>
+              <TableCell>{subscription.description}</TableCell>
+              <TableCell>{subscription.price}</TableCell>
+              <TableCell>
+                <Button variant="contained" color="primary">
+                  Subscribe
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
+
+export default AvailableSubscriptions;

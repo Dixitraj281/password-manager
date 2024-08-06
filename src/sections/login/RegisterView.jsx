@@ -1,32 +1,23 @@
 import axios from 'axios';
 import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import { useRouter } from 'src/routes/hooks'; // Ensure this is the correct path
-
 import { bgGradient } from 'src/theme/css';
-
 import Logo from 'src/components/logo'; // Ensure this is the correct path
 import Iconify from 'src/components/iconify'; // Ensure this is the correct path
 
-// ----------------------------------------------------------------------
-
 export default function RegisterView() {
   const theme = useTheme();
-
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -36,8 +27,10 @@ export default function RegisterView() {
   const [fullName, setFullName] = useState('');
   const [countryCode, setCountryCode] = useState('+91'); // Default country code
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false); // Track if OTP was sent
+  const [loadingOtp, setLoadingOtp] = useState(false);
   const [error, setError] = useState(null);
-  const [userType, setUserType] = useState('user');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,18 +38,19 @@ export default function RegisterView() {
     setError(null);
 
     try {
-      const response = await axios.post(`${process.env.API_URL}/${userType}/signup`, {
+      const response = await axios.post(`${process.env.API_URL}/user/signup`, {
         email,
         password,
         full_name: fullName,
         phone_number: `${countryCode}${phoneNumber}`,
+        otp, // Include OTP in the registration request
       });
 
       if (response.data.code === 200) {
         // Save token and user data to local storage or context
         localStorage.setItem('token', response.data.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data.user));
-
+        
         router.push('/login');
       } else {
         setError('Registration failed. Please check your details.');
@@ -65,6 +59,25 @@ export default function RegisterView() {
       setError('An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendOtp = async () => {
+    setLoadingOtp(true);
+    setError(null);
+
+    try {
+      const response = await axios.post(`${process.env.API_URL}/user/sendOTPToEmail`, { email });
+
+      if (response.data.code === 200) {
+        setOtpSent(true); // Update state to indicate OTP has been sent
+      } else {
+        setError('Failed to send OTP. Please try again.');
+      }
+    } catch (err) {
+      setError('An error occurred while sending OTP. Please try again.');
+    } finally {
+      setLoadingOtp(false);
     }
   };
 
@@ -83,7 +96,18 @@ export default function RegisterView() {
           label="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onBlur={handleSendOtp} // Send OTP when email loses focus
         />
+
+        {otpSent && (
+          <TextField
+            name="otp"
+            label="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
+        )}
 
         <Grid container spacing={0.5}>
           <Grid item xs={4}>
@@ -172,29 +196,10 @@ export default function RegisterView() {
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
             Already have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }} onClick={() => router.push('/')}>
+            <Link variant="subtitle2" sx={{ ml: 0.5 }} onClick={() => router.push('/login')}>
               Sign in
             </Link>
           </Typography>
-
-          <Stack direction="row" spacing={2}>
-            <Button
-              fullWidth
-              size="large"
-              color={userType === 'user' ? 'primary' : 'inherit'}
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-              onClick={() => setUserType('user')}
-            >
-              Admin
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              OR
-            </Typography>
-          </Divider>
 
           {renderForm}
         </Card>

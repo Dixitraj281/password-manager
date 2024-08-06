@@ -44,7 +44,8 @@ export default function Nav({ openNav, onCloseNav, userRole }) {
     if (openNav) {
       onCloseNav();
     }
-  }, [pathname, onCloseNav, openNav]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const renderAccount = (
     <Box
@@ -79,25 +80,29 @@ export default function Nav({ openNav, onCloseNav, userRole }) {
 
   const renderUpgrade = (
     <Box sx={{ px: 2.5, pb: 3, mt: 10 }}>
-      {/* <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
-
+      <Stack alignItems="center" spacing={3} sx={{ pt: 5, borderRadius: 2, position: 'relative' }}>
+      <Box
+          component="img"
+          
+          sx={{ width: 100, position: 'absolute', top: -50 }}
+        />
         <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Get more?</Typography>
+          {/* <Typography variant="h6">Get more?</Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
             From only $69
-          </Typography>
+          </Typography> */}
         </Box>
 
-        <Button
+        {/* <Button
           href="#"
           target="_blank"
           variant="contained"
           color="inherit"
         >
           Upgrade to Pro
-        </Button>
-      </Stack> */}
+        </Button> */}
+      </Stack>
     </Box>
   );
 

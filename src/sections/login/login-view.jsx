@@ -1,9 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-// import { defineConfig, loadEnv } from 'vite'
 
-import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import {
   Box,
@@ -19,9 +17,7 @@ import {
 } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
-
 import { bgGradient } from 'src/theme/css';
-
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
@@ -104,13 +100,13 @@ export default function LoginView() {
           variant="subtitle2"
           component={RouterLink}
           underline="hover"
-          onClick={() => router.push('/forgot')}
+          to="/forgot"
         >
           Forgot password?
         </Link>
       </Stack>
 
-      <LoadingButton
+      <Button
         fullWidth
         size="large"
         type="submit"
@@ -120,7 +116,7 @@ export default function LoginView() {
         loading={loading}
       >
         Login
-      </LoadingButton>
+      </Button>
     </>
   );
 

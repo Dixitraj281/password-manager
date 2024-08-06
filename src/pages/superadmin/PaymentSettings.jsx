@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 
 const PaymentModel = () => {
-  const [basicPrice, setBasicPrice] = useState(10); // Predefined prices
+  const [basicPrice, setBasicPrice] = useState(10);
   const [miniPrice, setMiniPrice] = useState(20);
   const [agencyPrice, setAgencyPrice] = useState(30);
   const [basicDescription, setBasicDescription] = useState(
@@ -24,48 +24,98 @@ const PaymentModel = () => {
     'Great for medium-sized teams looking for more features.'
   );
   const [agencyDescription, setAgencyDescription] = useState(
-    'Perfect for large organizations with advanced project management requirements.'
+    'Perfect for agency with advanced project management requirements.'
   );
+  const [basicFeatures, setBasicFeatures] = useState('Task management, basic reporting, up to 10 team members.');
+  const [miniFeatures, setMiniFeatures] = useState('Task management, advanced reporting, up to 25 team members.');
+  const [agencyFeatures, setAgencyFeatures] = useState('Task management, custom reporting, unlimited team members.');
+  const [basicDuration, setBasicDuration] = useState(1); // duration in months
+  const [miniDuration, setMiniDuration] = useState(1);  // duration in months
+  const [agencyDuration, setAgencyDuration] = useState(1);  // duration in months
+
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // Fetch prices and descriptions on component mount
     fetchPrices();
   }, []);
 
   const fetchPrices = async () => {
     try {
-      // Simulating fetching predefined prices and descriptions from a source
       setBasicPrice(10);
       setMiniPrice(20);
       setAgencyPrice(30);
-      setBasicDescription(
-        'Ideal for small teams with basic project management needs. Includes task management, basic reporting, and up to 10 team members.'
-      );
-      setMiniDescription(
-        'Great for medium-sized teams looking for more features. Includes task management, advanced reporting, and up to 25 team members.'
-      );
-      setAgencyDescription(
-        'Perfect for large organizations with advanced project management requirements. Includes task management, custom reporting, and unlimited team members.'
-      );
+      setBasicDescription('Ideal for small teams with basic project management needs.');
+      setMiniDescription('Great for medium-sized teams looking for more features.');
+      setAgencyDescription('Perfect for agency with advanced project management requirements.');
+      setBasicFeatures('Task management, basic reporting, up to 10 team members.');
+      setMiniFeatures('Task management, advanced reporting, up to 25 team members.');
+      setAgencyFeatures('Task management, custom reporting, unlimited team members.');
+      setBasicDuration(1);
+      setMiniDuration(1);
+      setAgencyDuration(1);
     } catch (err) {
       console.error('Error fetching prices:', err);
       setErrorMessage('Error fetching prices.');
     }
   };
 
-  const handleSave = async () => {
-    const prices = {
-      basicPrice,
-      miniPrice,
-      agencyPrice,
+  const handleSave = async (planType) => {
+    let price;
+    let description;
+    let productName;
+    let duration;
+    let features;
+
+    switch(planType) {
+      case 'basic':
+        price = basicPrice;
+        description = basicDescription;
+        productName = "Basic Plan";
+        duration = basicDuration;
+        features = basicFeatures;
+        break;
+      case 'mini':
+        price = miniPrice;
+        description = miniDescription;
+        productName = "Mini Plan";
+        duration = miniDuration;
+        features = miniFeatures;
+        break;
+      case 'agency':
+        price = agencyPrice;
+        description = agencyDescription;
+        productName = "Agency Plan";
+        duration = agencyDuration;
+        features = agencyFeatures;
+        break;
+      default:
+        return;
+    }
+
+    const priceGroupData = {
+      name: productName,
+      price,
+      description,
+      duration,
+      features
     };
 
     try {
-      // Simulating saving updated prices
-      console.log('Updated prices:', prices);
-      setSuccessMessage('Prices updated successfully!');
+      const response = await fetch(`${process.env.API_URL}/admin/createPriceGroup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(priceGroupData),
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Prices updated successfully!');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'Error updating prices.');
+      }
     } catch (err) {
       console.error('Error updating prices:', err);
       setErrorMessage('Error updating prices.');
@@ -100,9 +150,25 @@ const PaymentModel = () => {
                 onChange={(e) => setBasicPrice(e.target.value)}
                 sx={{ mt: 2 }}
               />
+              <TextField
+                label="Duration (Months)"
+                variant="outlined"
+                fullWidth
+                value={basicDuration}
+                onChange={(e) => setBasicDuration(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+              <TextField
+                label="Features"
+                variant="outlined"
+                fullWidth
+                value={basicFeatures}
+                onChange={(e) => setBasicFeatures(e.target.value)}
+                sx={{ mt: 2 }}
+              />
             </CardContent>
             <CardActions>
-              <Button variant="contained" color="primary" onClick={handleSave} fullWidth>
+              <Button variant="contained" color="primary" onClick={() => handleSave('basic')} fullWidth>
                 Save
               </Button>
             </CardActions>
@@ -125,9 +191,25 @@ const PaymentModel = () => {
                 onChange={(e) => setMiniPrice(e.target.value)}
                 sx={{ mt: 2 }}
               />
+              <TextField
+                label="Duration (Months)"
+                variant="outlined"
+                fullWidth
+                value={miniDuration}
+                onChange={(e) => setMiniDuration(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+              <TextField
+                label="Features"
+                variant="outlined"
+                fullWidth
+                value={miniFeatures}
+                onChange={(e) => setMiniFeatures(e.target.value)}
+                sx={{ mt: 2 }}
+              />
             </CardContent>
             <CardActions>
-              <Button variant="contained" color="primary" onClick={handleSave} fullWidth>
+              <Button variant="contained" color="primary" onClick={() => handleSave('mini')} fullWidth>
                 Save
               </Button>
             </CardActions>
@@ -150,9 +232,25 @@ const PaymentModel = () => {
                 onChange={(e) => setAgencyPrice(e.target.value)}
                 sx={{ mt: 2 }}
               />
+              <TextField
+                label="Duration (Months)"
+                variant="outlined"
+                fullWidth
+                value={agencyDuration}
+                onChange={(e) => setAgencyDuration(e.target.value)}
+                sx={{ mt: 2 }}
+              />
+              <TextField
+                label="Features"
+                variant="outlined"
+                fullWidth
+                value={agencyFeatures}
+                onChange={(e) => setAgencyFeatures(e.target.value)}
+                sx={{ mt: 2 }}
+              />
             </CardContent>
             <CardActions>
-              <Button variant="contained" color="primary" onClick={handleSave} fullWidth>
+              <Button variant="contained" color="primary" onClick={() => handleSave('agency')} fullWidth>
                 Save
               </Button>
             </CardActions>

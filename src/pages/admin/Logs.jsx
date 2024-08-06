@@ -33,7 +33,7 @@ const Logs = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get(`${process.env.API_URL}/user/logs`); // Replace with your backend API endpoint
+      const response = await axios.get(`${process.env.API_URL}/user/showAllLogs`); // Replace with your backend API endpoint
       setAuditLogs(response.data.logs); // Assuming your backend returns logs in a 'logs' property
     } catch (error) {
       console.error('Error fetching logs:', error);
@@ -86,6 +86,7 @@ const Logs = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Email</TableCell>
+                <TableCell>Brand Name</TableCell>
                 <TableCell>Action</TableCell>
                 <TableCell>Timestamp</TableCell>
                 <TableCell>IP Address</TableCell>
@@ -101,6 +102,7 @@ const Logs = () => {
                         {log.email}
                       </Box>
                     </TableCell>
+                    <TableCell>{log.agency.name}</TableCell>
                     <TableCell>{log.action}</TableCell>
                     <TableCell>{log.timestamp}</TableCell>
                     <TableCell>{log.ip}</TableCell>

@@ -1,29 +1,28 @@
 // /pages/index.js
-import * as React from 'react';
-
+import React from 'react';
 import { Container } from '@mui/material';
 
 import SubscriptionList from './Subscriptionpage';
-import SubscriptionForm from './SubscriptionForm';
+import AvailableSubscriptions from './SubscriptionForm';
 
 export default function Subscriptionindex() {
-  const [showForm, setShowForm] = React.useState(false);
+  const [view, setView] = React.useState('list'); // 'list' or 'available'
 
   const handleAddSubscription = () => {
-    setShowForm(true);
+    setView('available');
   };
 
-  const handleCancelForm = () => {
-    setShowForm(false);
+  const handleBackToList = () => {
+    setView('list');
   };
 
   return (
     <Container>
-      {showForm ? (
-        <SubscriptionForm onCancel={handleCancelForm} />
-      ) : (
+      {view === 'list' ? (
         <SubscriptionList onAddSubscription={handleAddSubscription} />
+      ) : (
+        <AvailableSubscriptions onBack={handleBackToList} />
       )}
     </Container>
   );
-};
+}

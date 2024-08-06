@@ -22,7 +22,7 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={16} sm={8} md={4}>
           <AppWidgetSummary
             title="Passwords"
             total={20}
@@ -31,7 +31,7 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={16} sm={8} md={4}>
           <AppWidgetSummary
             title="Total Users"
             total={25}
@@ -40,18 +40,9 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        <Grid xs={16} sm={8} md={4}>
           <AppWidgetSummary
-            title="Auth"
-            total={45}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Screenshots"
+            title="Media"
             total={234}
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}

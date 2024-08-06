@@ -10,6 +10,7 @@ import Password from 'src/pages/admin/Password';
 import Passwords from 'src/pages/user/Passwords';
 import Members from 'src/pages/superadmin/Members';
 import DashboardLayout from 'src/layouts/dashboard';
+import LandingPage from 'src/landing-page/LandingPage';
 import UserProfilePage from 'src/pages/user/UserProfile';
 import TotalAdmins from 'src/pages/superadmin/TotalAdmins';
 
@@ -20,6 +21,8 @@ import ClientDetails from 'src/sections/admin-table/ClientDetails'; // Moved her
 import PaymentSettings from 'src/pages/superadmin/PaymentSettings'; // Moved here
 import MediaAccountForm from 'src/sections/admin-table/MediaAccountForm';
 import Subscriptionindex from 'src/sections/admin-table/Subscriptionindex';
+import ForgotPasswordView from 'src/sections/login/ForgotPasswordView';
+import ResetPasswordView from 'src/sections/login/ResetPasswordView';
 
 
 // Lazy imports
@@ -84,7 +87,7 @@ export default function Router() {
       ],
     },
     {
-      path: '/',
+      path: 'login',
       element: <LoginPage />,
     },
     {
@@ -98,6 +101,18 @@ export default function Router() {
     {
       path: 'forgot',
       element: <ForgotPassword />
+    },
+    {
+      path: '/',
+      element: <LandingPage/>
+    },
+    {
+      path: 'forgot',
+      element: <ForgotPasswordView/>
+    },
+    {
+      path: 'reset',
+      element:<ResetPasswordView/>
     }
   ]);
 
