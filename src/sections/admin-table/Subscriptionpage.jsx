@@ -1,61 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Paper, Button, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+
+import { Table, Paper, Button, TableRow, TableBody, TableCell, TableHead, Typography, TableContainer } from '@mui/material';
+
 import AvailableSubscriptions from './SubscriptionForm'; // Import the new component
 
 const SubscriptionList = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [showAvailable, setShowAvailable] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchSubscriptions = async () => {
-  //     try {
-  //       // Retrieve the token from local storage or any other secure storage
-  //       const token = localStorage.getItem('authToken');
-        
-  //       if (!token) {
-  //         throw new Error('No authentication token found');
-  //       }
-        
-  //       // Make the API request with the token in the Authorization header
-  //       const response = await axios.get(`${process.env.API_URL}/user/getAllPlans`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}` // Set the Authorization header with the token
-  //         }
-  //       });
-        
-  //       setSubscriptions(response.data.data); // Assuming response data is in a `data` property
-  //     } catch (error) {
-  //       console.error('Error fetching subscription data:', error);
-  //     }
-  //   };
-
-  //   fetchSubscriptions();
-  // }, []);
-
   const fetchSubscriptions = async () => {
-    try{
-      const response = await axios.get(`${process.env.API_URL}/user/getAllPlans`, {
-        headers: {
-          Authorization: `Bearer ${token}` // Set the Authorization header with the token
-        }
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
+
+      const response = await axios.get(`${process.env.API_URL}/user/getMySubscriptions`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
 
-      setSubscriptions(response.data.data); // Adjust based on actual response structure
+      // Ensure response.data and response.data.data are not null
+      if (response.data && response.data.data) {
+        setSubscriptions(response.data.data);
+      } else {
+        console.error('Invalid response structure:', response.data);
+        setSubscriptions([]);
+      }
     } catch (error) {
-      console.error('Error fetching available subscriptions:', error);
+      console.error('Error fetching subscriptions:', error);
+      setSubscriptions([]);
     }
   };
+
   useEffect(() => {
     fetchSubscriptions();
-}, []);
+  }, []);
 
   const handleAddSubscription = () => {
-    setShowAvailable(true); // Show the available subscriptions list
+    setShowAvailable(true);
   };
 
   const handleBack = () => {
-    setShowAvailable(false); // Go back to the current subscriptions list
+    setShowAvailable(false);
   };
 
   if (showAvailable) {
@@ -78,15 +66,23 @@ const SubscriptionList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {subscriptions.map((subscription, index) => (
-            <TableRow key={index}>
-              <TableCell>{subscription.name}</TableCell>
-              <TableCell>{subscription.purchasedDate}</TableCell>
-              <TableCell>{subscription.endDate}</TableCell>
-              <TableCell>{subscription.timePeriod}</TableCell>
-              <TableCell>{subscription.plan}</TableCell>
+          {Array.isArray(subscriptions) && subscriptions.length > 0 ? (
+            subscriptions.map((subscription, index) => (
+              <TableRow key={index}>
+                <TableCell>{subscription.name}</TableCell>
+                <TableCell>{subscription.purchasedDate}</TableCell>
+                <TableCell>{subscription.endDate}</TableCell>
+                <TableCell>{subscription.timePeriod}</TableCell>
+                <TableCell>{subscription.plan}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" color="textSecondary">No subscriptions available</Typography>
+              </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </TableContainer>

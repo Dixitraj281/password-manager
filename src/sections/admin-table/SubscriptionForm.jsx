@@ -1,24 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Paper, Button, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
+
+import { Table, Paper, Button, TableRow, TableBody, TableCell, TableHead, TableContainer } from '@mui/material';
 
 const AvailableSubscriptions = ({ onBack }) => {
   const [availableSubscriptions, setAvailableSubscriptions] = useState([]);
 
-    const fetchAvailableSubscriptions = async () => {
-      try{
-        const response = await axios.get(`${process.env.API_URL}/user/getAllPlans`, {
-          headers: {
-            Authorization: `Bearer ${token}` // Set the Authorization header with the token
-          }
-        });
+  const fetchAvailableSubscriptions = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
-        setAvailableSubscriptions(response.data.data); // Adjust based on actual response structure
-      } catch (error) {
-        console.error('Error fetching available subscriptions:', error);
+      if (!token) {
+        throw new Error('No authentication token found');
       }
-    };
-    useEffect(() => {
+
+      const response = await axios.get(`${process.env.API_URL}/user/getAllPlans`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setAvailableSubscriptions(response.data.data);
+    } catch (error) {
+      console.error('Error fetching available subscriptions:', error);
+    }
+  };
+
+  const handleSubscribe = async (subscriptionId, priceId) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.post(
+        `${process.env.API_URL}/user/buysubscription`,
+        { price_id: priceId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data && response.data.url) {
+        window.location.href = response.data.url; // Redirect to the payment page
+      } else {
+        console.error('Invalid response data:', response.data);
+      }
+    } catch (error) {
+      console.error('Error during subscription:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchAvailableSubscriptions();
   }, []);
 
@@ -43,7 +80,11 @@ const AvailableSubscriptions = ({ onBack }) => {
               <TableCell>{subscription.description}</TableCell>
               <TableCell>{subscription.price}</TableCell>
               <TableCell>
-                <Button variant="contained" color="primary">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleSubscribe(subscription.id, subscription.price_id)}
+                >
                   Subscribe
                 </Button>
               </TableCell>
@@ -53,6 +94,10 @@ const AvailableSubscriptions = ({ onBack }) => {
       </Table>
     </TableContainer>
   );
+};
+
+AvailableSubscriptions.propTypes = {
+  onBack: PropTypes.func.isRequired
 };
 
 export default AvailableSubscriptions;

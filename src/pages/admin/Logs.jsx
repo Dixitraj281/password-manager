@@ -20,7 +20,6 @@ import {
   TablePagination,
 } from '@mui/material';
 
-
 const Logs = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [page, setPage] = useState(0);
@@ -33,8 +32,21 @@ const Logs = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get(`${process.env.API_URL}/user/showAllLogs`); // Replace with your backend API endpoint
-      setAuditLogs(response.data.logs); // Assuming your backend returns logs in a 'logs' property
+      // Retrieve the token from local storage or any other secure storage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        return;
+      }
+
+      const response = await axios.get(`${process.env.API_URL}/user/showAllLogs`, {
+        headers: {
+          Authorization: `Bearer ${token}` // Set the Authorization header with the token
+        }
+      });
+
+      console.log('API Response:', response.data); // Debugging line
+      setAuditLogs(response.data.logs || []); // Ensure you set an empty array if logs is not defined
     } catch (error) {
       console.error('Error fetching logs:', error);
     }
@@ -102,7 +114,7 @@ const Logs = () => {
                         {log.email}
                       </Box>
                     </TableCell>
-                    <TableCell>{log.agency.name}</TableCell>
+                    <TableCell>{log.agency ? log.agency.name : 'N/A'}</TableCell>
                     <TableCell>{log.action}</TableCell>
                     <TableCell>{log.timestamp}</TableCell>
                     <TableCell>{log.ip}</TableCell>
@@ -110,7 +122,7 @@ const Logs = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} sx={{ textAlign: 'center' }}>
+                  <TableCell colSpan={5} sx={{ textAlign: 'center' }}>
                     <Typography variant="h6" color="textSecondary">No logs available</Typography>
                   </TableCell>
                 </TableRow>

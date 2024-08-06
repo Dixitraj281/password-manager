@@ -47,7 +47,7 @@ export default function Passwords() {
 
   const fetchSites = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/member/getGrantedPasswordList`, {
+      const response = await axios.get(`${process.env.API_URL}/member/getGrantedPasswordList`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },

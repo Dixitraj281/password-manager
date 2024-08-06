@@ -1,9 +1,10 @@
-import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState,useCallback } from 'react';
 
 import { Box, Button, Select, MenuItem, TextField, Typography, InputLabel, FormControl } from '@mui/material';
 
-const platforms = [
+const initialPlatforms = [
   { name: 'Facebook', logo: 'https://via.placeholder.com/24?text=FB' },
   { name: 'Twitter', logo: 'https://via.placeholder.com/24?text=TW' },
   { name: 'Instagram', logo: 'https://via.placeholder.com/24?text=IG' },
@@ -28,7 +29,13 @@ const MediaAccountForm = () => {
     FA_App: '',
     Recovery_Email: '',
     Backup_Codes: '',
+    newPlatform: '' // State to hold the new platform value
   });
+
+  const [platforms, setPlatforms] = useState(initialPlatforms); // State for platforms
+  const [isAddingPlatform, setIsAddingPlatform] = useState(false); // Toggle for adding new platform
+
+  const navigate = useNavigate(); // Get the navigate function
 
   const handleChange = (e) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -38,10 +45,27 @@ const MediaAccountForm = () => {
     setFormValues({ ...formValues, platform: event.target.value });
   };
 
+  const handleAddPlatform = () => {
+    if (formValues.newPlatform.trim() !== '') {
+      const newPlatform = {
+        name: formValues.newPlatform,
+        logo: 'https://via.placeholder.com/24?text=NP' // Placeholder logo for new platform
+      };
+      setPlatforms([...platforms, newPlatform]);
+      setFormValues({ ...formValues, platform: formValues.newPlatform, newPlatform: '' });
+      setIsAddingPlatform(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Logic to save media account data
     console.log('Form Submitted', formValues);
+
+    // Simulate a successful save with a timeout
+    setTimeout(() => {
+      navigate('/clientinfo'); // Redirect to clientinfo route
+    }, 1000); // Adjust timeout as needed
   };
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -85,7 +109,28 @@ const MediaAccountForm = () => {
               </Box>
             </MenuItem>
           ))}
+          <MenuItem onClick={() => setIsAddingPlatform(true)}>
+            <Typography>Add New Platform...</Typography>
+          </MenuItem>
         </Select>
+        {isAddingPlatform && (
+          <Box sx={{ mt: 2 }}>
+            <TextField
+              label="New Platform Name"
+              name="newPlatform"
+              value={formValues.newPlatform}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <Button variant="contained" color="primary" onClick={handleAddPlatform}>
+              Add Platform
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={() => setIsAddingPlatform(false)} sx={{ ml: 2 }}>
+              Cancel
+            </Button>
+          </Box>
+        )}
       </FormControl>
 
       <TextField

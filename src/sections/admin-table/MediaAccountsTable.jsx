@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import {
   Table,
   Paper,
@@ -13,41 +16,47 @@ import {
   TableHead,
   Typography,
   InputLabel,
+  IconButton,
   FormControl,
   DialogContent,
   DialogActions,
   TableContainer,
 } from '@mui/material';
 
-// Dummy data for media accounts (you should replace this with real data)
-const dummyMediaAccounts = [
-  { id: 1, platform: 'Facebook', url: 'https://facebook.com', email: 'user@facebook.com', username: 'user1', password: 'password1', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 2, platform: 'Twitter', url: 'https://twitter.com', email: 'user@twitter.com', username: 'user2', password: 'password2', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 3, platform: 'Instagram', url: 'https://instagram.com', email: 'user@instagram.com', username: 'user3', password: 'password3', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 4, platform: 'LinkedIn', url: 'https://linkedin.com', email: 'user@linkedin.com', username: 'user4', password: 'password4', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 5, platform: 'Snapchat', url: 'https://snapchat.com', email: 'user@snapchat.com', username: 'user5', password: 'password5', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 6, platform: 'Airbnb', url: 'https://airbnb.com', email: 'user@airbnb.com', username: 'user6', password: 'password6', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 7, platform: 'Booking.com', url: 'https://booking.com', email: 'user@booking.com', username: 'user7', password: 'password7', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  { id: 8, platform: 'Expedia', url: 'https://expedia.com', email: 'user@expedia.com', username: 'user8', password: 'password8', notes: 'Some notes', image: 'https://via.placeholder.com/150' },
-  // Add more platforms as needed
-];
-
-const platforms = [
-  'Facebook',
-  'Twitter',
-  'Instagram',
-  'LinkedIn',
-  'Snapchat',
-  'Airbnb',
-  'Booking.com',
-  'Expedia',
-  // Add more famous platforms here
-];
-
 export default function MediaAccountsTable() {
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('');
+  const [mediaAccounts, setMediaAccounts] = useState([]);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    fetchMediaAccounts();
+  }, []);
+
+  const fetchMediaAccounts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+  
+      const response = await axios.get(`${process.env.API_URL}/user/listAllPasswordByAgency`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      console.log('API response:', response.data); // Check the structure of the response
+      console.log('Type of response.data:', Array.isArray(response.data));
+  
+      // Ensure that response.data is an array
+      setMediaAccounts(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error('Error fetching media accounts:', error);
+    }
+  };
+  
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -63,6 +72,14 @@ export default function MediaAccountsTable() {
     setSelectedPlatform(event.target.value);
   };
 
+  const handlePasswordToggle = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const filteredMediaAccounts = mediaAccounts.filter(account =>
+    !selectedPlatform || account.platform === selectedPlatform
+  );
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -77,7 +94,7 @@ export default function MediaAccountsTable() {
             <MenuItem value="">
               <em>All</em>
             </MenuItem>
-            {platforms.map((platform, index) => (
+            {['Facebook', 'Twitter', 'Instagram', 'LinkedIn', 'Snapchat', 'Airbnb', 'Booking.com', 'Expedia'].map((platform, index) => (
               <MenuItem key={index} value={platform}>{platform}</MenuItem>
             ))}
           </Select>
@@ -95,15 +112,19 @@ export default function MediaAccountsTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dummyMediaAccounts
-              .filter(account => !selectedPlatform || account.platform === selectedPlatform)
-              .map((account) => (
+            {filteredMediaAccounts.length > 0 ? (
+              filteredMediaAccounts.map((account) => (
                 <TableRow key={account.id}>
                   <TableCell>{account.platform}</TableCell>
                   <TableCell>{account.url}</TableCell>
                   <TableCell>{account.email}</TableCell>
                   <TableCell>{account.username}</TableCell>
-                  <TableCell>{account.password}</TableCell>
+                  <TableCell>
+                    {passwordVisible ? account.password : '********'}
+                    <IconButton onClick={handlePasswordToggle}>
+                      {passwordVisible ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </TableCell>
                   <TableCell>{account.notes}</TableCell>
                   <TableCell>
                     <Button onClick={() => handleImageClick(account.image)} style={{ padding: 0 }}>
@@ -117,7 +138,14 @@ export default function MediaAccountsTable() {
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} sx={{ textAlign: 'center' }}>
+                  <Typography variant="h6" color="textSecondary">No media available</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

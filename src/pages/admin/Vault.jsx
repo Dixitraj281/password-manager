@@ -28,12 +28,23 @@ export default function VaultTable() {
 
     const fetchVaults = async () => {
         try {
-            const response = await axios.get(`${process.env.API_URL}/vault/all`);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+    
+            const response = await axios.get(`${process.env.API_URL}/user/getVault`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+    
             setVaults(response.data);
         } catch (error) {
             console.error('Error fetching vault data:', error);
         }
     };
+    
 
     useEffect(() => {
         fetchVaults();

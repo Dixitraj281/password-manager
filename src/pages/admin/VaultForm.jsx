@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useState } from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
+import React, { useState } from 'react';
 
 import {
     Stack,
@@ -7,7 +8,7 @@ import {
     TextField,
 } from '@mui/material';
 
-export default function VaultForm( onClose ) {
+function VaultForm({ onClose }) {
     const [formData, setFormData] = useState({
         user_id: '',
         type: '',
@@ -24,7 +25,7 @@ export default function VaultForm( onClose ) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${process.env.API_URL}/vault/create`, formData);
+            const response = await axios.post(`${process.env.API_URL}/user/createPassword`, formData);
             alert(response.data.message);
             onClose();
         } catch (error) {
@@ -88,3 +89,10 @@ export default function VaultForm( onClose ) {
         </form>
     );
 }
+
+// Define prop types for the component
+VaultForm.propTypes = {
+    onClose: PropTypes.func.isRequired // Define the expected type for onClose
+};
+
+export default VaultForm;

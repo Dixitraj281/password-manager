@@ -90,14 +90,6 @@ function AppAppBar({ mode, toggleColorMode }) {
                 variant="text"
                 color="info"
                 size="small"
-                onClick={() => scrollToSection('testimonials')}
-              >
-                Testimonials
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
                 onClick={() => scrollToSection('highlights')}
               >
                 Highlights

@@ -212,8 +212,8 @@ export default function UserPage() {
           <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleNewUser}>
             New User
           </Button>
-          <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleNewMedia}>
-            New Media
+          <Button variant="contained" color="inherit" onClick={handleNewMedia}>
+            View Media
           </Button>
         </Stack>
       </Stack>

@@ -2,9 +2,11 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { Box, TextField, Card, Stack, Typography } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
+import { Box, Card, Stack, Button, TextField, Typography } from '@mui/material';
+
 import { bgGradient } from 'src/theme/css';
+
 import Logo from 'src/components/logo';
 
 export default function ResetPasswordView() {

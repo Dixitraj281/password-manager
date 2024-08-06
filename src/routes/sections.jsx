@@ -19,10 +19,10 @@ import RegisterView from 'src/sections/login/RegisterView';
 import ForgotPassword from 'src/sections/login/ForgotPassword';
 import ClientDetails from 'src/sections/admin-table/ClientDetails'; // Moved here
 import PaymentSettings from 'src/pages/superadmin/PaymentSettings'; // Moved here
+import ResetPasswordView from 'src/sections/login/ResetPasswordView';
+import ForgotPasswordView from 'src/sections/login/ForgotPasswordView';
 import MediaAccountForm from 'src/sections/admin-table/MediaAccountForm';
 import Subscriptionindex from 'src/sections/admin-table/Subscriptionindex';
-import ForgotPasswordView from 'src/sections/login/ForgotPasswordView';
-import ResetPasswordView from 'src/sections/login/ResetPasswordView';
 
 
 // Lazy imports

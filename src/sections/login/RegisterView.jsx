@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -11,8 +12,10 @@ import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
+
 import { useRouter } from 'src/routes/hooks'; // Ensure this is the correct path
 import { bgGradient } from 'src/theme/css';
+
 import Logo from 'src/components/logo'; // Ensure this is the correct path
 import Iconify from 'src/components/iconify'; // Ensure this is the correct path
 
@@ -29,7 +32,7 @@ export default function RegisterView() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false); // Track if OTP was sent
-  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [setLoadingOtp] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {

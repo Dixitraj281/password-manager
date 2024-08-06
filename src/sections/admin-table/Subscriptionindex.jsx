@@ -1,5 +1,6 @@
 // /pages/index.js
 import React from 'react';
+
 import { Container } from '@mui/material';
 
 import SubscriptionList from './Subscriptionpage';
