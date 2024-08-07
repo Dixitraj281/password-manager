@@ -48,8 +48,8 @@ const ClientDetails = () => {
   }, [agencyId]);
 
   const handleCreateMediaAccount = () => {
-    navigate('/mediaform');
-  };
+    navigate(`/mediaform?agencyid=${agencyId}`);
+  };  
 
   if (loading) {
     return <CircularProgress />;

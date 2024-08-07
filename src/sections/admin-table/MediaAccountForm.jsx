@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import React, { useState,useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Box, Button, Select, MenuItem, TextField, Typography, InputLabel, FormControl } from '@mui/material';
 
@@ -17,9 +18,12 @@ const initialPlatforms = [
 ];
 
 const MediaAccountForm = () => {
-  const [formValues, setFormValues] = React.useState({
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const agencyId = queryParams.get('agencyid'); // Retrieve agencyId from query params
+
+  const [formValues, setFormValues] = useState({
     platform: '',
-    url: '',
     email: '',
     username: '',
     password: '',
@@ -29,7 +33,10 @@ const MediaAccountForm = () => {
     FA_App: '',
     Recovery_Email: '',
     Backup_Codes: '',
-    newPlatform: '' // State to hold the new platform value
+    newPlatform: '', // State to hold the new platform value
+    siteName: '', // Add siteName field
+    siteURL: '',  // Add siteURL field
+    agencyId: agencyId || '' // Set agencyId from query params, default to empty string if not available
   });
 
   const [platforms, setPlatforms] = useState(initialPlatforms); // State for platforms
@@ -57,15 +64,28 @@ const MediaAccountForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Logic to save media account data
     console.log('Form Submitted', formValues);
 
-    // Simulate a successful save with a timeout
-    setTimeout(() => {
+    try {
+      const token = localStorage.getItem('token'); // Get the token from localStorage
+      const response = await axios.post(
+        `${process.env.API_URL}/user/createPassword`,
+        formValues,
+        {
+          headers: {
+            Authorization: `Bearer ${token}` // Pass the token in the Authorization header
+          }
+        }
+      );
+      alert(response.data.message);
       navigate('/clientinfo'); // Redirect to clientinfo route
-    }, 1000); // Adjust timeout as needed
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      alert('Error saving media account details');
+    }
   };
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -134,9 +154,17 @@ const MediaAccountForm = () => {
       </FormControl>
 
       <TextField
-        label="URL"
-        name="url"
-        value={formValues.url}
+        label="Site Name" // Add input for siteName
+        name="siteName"
+        value={formValues.siteName}
+        onChange={handleChange}
+        fullWidth
+        sx={{ mb: 2 }}
+      />
+      <TextField
+        label="Site URL" // Add input for siteURL
+        name="siteURL"
+        value={formValues.siteURL}
         onChange={handleChange}
         fullWidth
         sx={{ mb: 2 }}

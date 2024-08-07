@@ -82,10 +82,9 @@ export default function Pricing() {
           Pricing
         </Typography>
         <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-          Quickly build an effective pricing table for your potential customers with
-          this layout. <br />
-          It&apos;s built with default Material UI components with little
-          customization.
+        Choose the perfect plan to manage your passwords securely and efficiently. 
+  Our pricing is designed to fit a range of needs, whether you&apos;re looking for basic 
+  functionality or advanced features. <br />
         </Typography>
       </Box>
       <Grid

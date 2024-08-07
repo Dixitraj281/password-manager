@@ -1,8 +1,9 @@
 import axios from 'axios';
-import PropTypes from 'prop-types'; // Import PropTypes
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 import {
+    Box,
     Stack,
     Button,
     TextField,
@@ -14,7 +15,10 @@ function VaultForm({ onClose }) {
         type: '',
         username: '',
         password: '',
-        expiration_date: ''
+        expiration_date: '',
+        agency: '',
+        siteName: '',
+        siteURL: ''
     });
 
     const handleChange = (e) => {
@@ -24,18 +28,38 @@ function VaultForm({ onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Submitting form with data:", formData); // Add this line to debug form data
         try {
-            const response = await axios.post(`${process.env.API_URL}/user/createPassword`, formData);
+            const token = localStorage.getItem('token'); // Get the token from localStorage
+            const response = await axios.post(
+                `${process.env.API_URL}/user/createPassword`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}` // Pass the token in the Authorization header
+                    }
+                }
+            );
             alert(response.data.message);
             onClose();
         } catch (error) {
-            console.error(error);
+            console.error("Error in form submission:", error); // Add this line to debug errors
             alert('Error saving vault details');
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+                width: '500px', // Set the desired width here
+                p: 2,
+                backgroundColor: 'background.paper',
+                borderRadius: 1,
+                boxShadow: 3,
+            }}
+        >
             <Stack spacing={2}>
                 <TextField
                     label="User ID"
@@ -82,11 +106,35 @@ function VaultForm({ onClose }) {
                     }}
                     required
                 />
+                <TextField
+                    label="Agency"
+                    name="agency"
+                    value={formData.agency}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                />
+                <TextField
+                    label="Site Name"
+                    name="siteName"
+                    value={formData.siteName}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                />
+                <TextField
+                    label="Site URL"
+                    name="siteURL"
+                    value={formData.siteURL}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                />
                 <Button type="submit" variant="contained" color="primary">
                     Save
                 </Button>
             </Stack>
-        </form>
+        </Box>
     );
 }
 

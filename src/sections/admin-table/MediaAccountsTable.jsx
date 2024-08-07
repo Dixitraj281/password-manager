@@ -36,27 +36,37 @@ export default function MediaAccountsTable() {
 
   const fetchMediaAccounts = async () => {
     try {
+      // Extract agencyid from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const agencyId = urlParams.get('agencyid');
+
+      if (!agencyId) {
+        throw new Error('No agency ID found in the URL');
+      }
+
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
-  
+
       const response = await axios.get(`${process.env.API_URL}/user/listAllPasswordByAgency`, {
+        params: {
+          agencyid: agencyId,
+        },
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       console.log('API response:', response.data); // Check the structure of the response
       console.log('Type of response.data:', Array.isArray(response.data));
-  
+
       // Ensure that response.data is an array
       setMediaAccounts(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching media accounts:', error);
     }
   };
-  
 
   const handleImageClick = (image) => {
     setSelectedImage(image);

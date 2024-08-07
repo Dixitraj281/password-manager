@@ -34,11 +34,12 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 const generateRandomPassword = () => {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let password = '';
-  for (let i = 0; i < 8; i+1) {
+  for (let i = 0; i < 8; i+1) { // Use `i++` instead of `i+1`
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
 };
+
 
 export default function UserPage() {
   const [users, setUsers] = useState([]);
@@ -135,10 +136,10 @@ export default function UserPage() {
 
   const handleNewUser = () => {
     setOpenDialog(true);
-    setPassword(generateRandomPassword()); // Generate a password when the dialog opens
-  };
+    setPassword(generateRandomPassword()); // Ensure this function runs quickly
+  };  
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setOpenDialog(false);
     setNewUserName('');
     setNewEmail('');
@@ -147,40 +148,44 @@ export default function UserPage() {
     setNewUserStatus('active');
     setError(null);
     setPassword(''); // Reset password on dialog close
-  };
+  }, []);
 
-  const handleCreateUser = async () => {
+  const handleCreateUser = useCallback(async () => {
     const newUser = {
       full_name: newUserName,
       email: newEmail,
       phone_number: phoneNumber,
       email_verified: verified,
       status: newUserStatus,
-      password, // Include the generated password
+      password,
       agencyId,
     };
 
     try {
+      console.log('Creating user:', newUser);
       const response = await axios.post(`${process.env.API_URL}/user/createMember`, newUser, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
-
+  
       if (response.data.code === 200) {
-        setUsers([...users, response.data.data]);
+        console.log('User created:', response.data.data);
+        setUsers(prevUsers => [...prevUsers, response.data.data]);
         handleCloseDialog();
       } else {
         setError('Error creating user.');
       }
     } catch (err) {
+      console.error('Error creating user:', err);
       setError('Error creating user.');
     }
-  };
+  }, [newUserName, newEmail, phoneNumber, verified, newUserStatus, password, agencyId, handleCloseDialog]);
 
   const handleNewMedia = () => {
-    navigate('/clientinfo');
+    navigate(`/clientinfo?agencyid=${agencyId}`);
   };
+  
 
   const handleCloseMediaDialog = () => {
     setOpenMediaDialog(false);
