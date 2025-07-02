@@ -9,7 +9,7 @@ A secure, role-based password management system built for agencies, startups, an
 
 ## 🧰 Tech Stack
 
-- **Frontend:** React.js, Tailwind CSS
+- **Frontend:** React.js, Tailwind CSS, Material Ui
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
 - **Authentication:** JWT (JSON Web Tokens)
@@ -56,8 +56,3 @@ npm run dev
 cd ..
 npm start
 ```
-## Folder Structure
-/password-manager
-  ├── /frontend  (React app)
-  └── /backend   (Node + Express API)
-
